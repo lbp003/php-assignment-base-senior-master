@@ -8,4 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Image extends Model
 {
     use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'damage_report_id',
+        'filename',
+        'disk',
+        'path',
+    ];
 }

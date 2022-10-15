@@ -42,10 +42,18 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the damage reports for the user.
+     * Get the created damage reports for the user.
      */
-    public function damageReports()
+    public function createdDamageReports()
     {
-        return $this->hasMany(DamageReport::class);
+        return $this->hasMany(DamageReport::class, 'created_by');
+    }
+
+    /**
+     * Get the approved damage reports for the user.
+     */
+    public function approvedDamageReports()
+    {
+        return $this->hasMany(DamageReport::class, 'state_by');
     }
 }

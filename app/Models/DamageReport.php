@@ -30,4 +30,28 @@ class DamageReport extends Model
         'state',
         'reason',
     ];
+
+    /**
+     * Get the created user that owns the damage report.
+     */
+    public function createdUser()
+    {
+        return $this->belongsTo(User::class, 'id', 'created_by');
+    }
+
+    /**
+     * Get the approved user that owns the damage report.
+     */
+    public function approvedUser()
+    {
+        return $this->belongsTo(User::class, 'id', 'state_by');
+    }
+
+    /**
+     * Get the approved user that owns the damage report.
+     */
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
 }
