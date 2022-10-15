@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('damage_reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained('customers');
-            $table->foreignId('created_by_id')->constrained('users');
+            $table->foreignId('created_by')->constrained('users');
             $table->foreignId('state_by')->constrained('users');
             $table->string('damage_report_number');
             $table->longText('description');
