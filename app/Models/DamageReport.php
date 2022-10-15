@@ -30,6 +30,4 @@ class DamageReport extends Model
         'state',
         'reason',
     ];
-
-
 }

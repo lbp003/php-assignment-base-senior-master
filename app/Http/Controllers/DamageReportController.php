@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DamageReport;
 use App\Http\Requests\StoreDamageReportRequest;
 use App\Http\Requests\UpdateDamageReportRequest;
+use App\Models\DamageReport;
 
 class DamageReportController extends Controller
 {

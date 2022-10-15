@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RepairShop;
 use App\Http\Requests\StoreRepairShopRequest;
 use App\Http\Requests\UpdateRepairShopRequest;
+use App\Models\RepairShop;
 
 class RepairShopController extends Controller
 {
