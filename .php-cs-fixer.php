@@ -75,7 +75,6 @@ $rules = [
     'no_spaces_around_offset' => true,
     'no_spaces_inside_parenthesis' => true,
     'no_trailing_comma_in_singleline' => true,
-    'no_trailing_comma_in_singleline_array' => true,
     'no_trailing_whitespace' => true,
     'no_trailing_whitespace_in_comment' => true,
     'no_unneeded_control_parentheses' => true,
