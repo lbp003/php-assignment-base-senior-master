@@ -9,6 +9,9 @@ class RepairShop extends Model
 {
     use HasFactory;
 
+    // Distance in km
+    const REPAIR_SHOP_DISTANCE = 25;
+
     /**
      * The attributes that are mass assignable.
      *

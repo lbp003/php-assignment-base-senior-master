@@ -5,9 +5,11 @@ namespace App\Services;
 use App\Http\Requests\StoreDamageReportRequest;
 use App\Http\Requests\UpdateStateDamageReportRequest;
 use App\Models\DamageReport;
+use App\Models\RepairShop;
 use App\Repositories\DamageReportRepository;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use KMLaravel\GeographicalCalculator\Facade\GeoFacade;
 
 class DamageReportService
 {
@@ -18,10 +20,19 @@ class DamageReportService
      */
     protected $damageReportRepository;
 
+    /**
+     * The repair shop service instance.
+     *
+     * @var \App\Services\RepairShopService
+     */
+    protected $repairShopService;
+
     public function __construct(
         DamageReportRepository $damageReportRepository,
+        RepairShopService $repairShopService,
     ) {
         $this->damageReportRepository = $damageReportRepository;
+        $this->repairShopService = $repairShopService;
     }
 
     /**
@@ -97,6 +108,20 @@ class DamageReportService
         if ($isApproved === true) {
             $damageReport->state = DamageReport::STATE_APPROVED;
             $damageReport->state_by = $stateBy;
+
+            $latitude = $damageReport->latitude;
+            $longitude = $damageReport->longitude;
+
+            $location = [
+                $latitude,
+                $longitude,
+            ];
+
+            $repairShopsInArea = $this->checkLocationInGivenArea($location);
+
+            if (!empty($repairShopsInArea)) {
+                // @todo Send email to customer
+            }
         } else {
             $damageReport->state = DamageReport::STATE_REJECTED;
             $damageReport->state_by = $stateBy;
@@ -104,5 +129,33 @@ class DamageReportService
         }
 
         return $this->damageReportRepository->handleSave($damageReport);
+    }
+
+    /**
+     * Handle all repair shops in area.
+     *
+     * @param array $location
+     * @return array $repairShopsInArea
+     */
+    protected function checkLocationInGivenArea(array $location)
+    {
+        $repairShops = $this->repairShopService->handleGetAllRepairShopsLatLongs();
+        $repairShopsInArea = [];
+
+        foreach ($repairShops as $repairShop) {
+            $isInArea = GeoFacade::setMainPoint([$location[0], $location[1]])
+            // diameter in kilo meter
+             ->setDiameter(RepairShop::REPAIR_SHOP_DISTANCE)
+            // point to check, do not insert more than one point here.
+             ->setPoint([$repairShop['latitude'], $repairShop['longitude']])
+             ->isInArea();
+            // the result is true or false
+
+            if ($isInArea === true) {
+                $repairShopsInArea[] = $repairShop;
+            }
+        }
+
+        return $repairShopsInArea;
     }
 }
