@@ -54,4 +54,20 @@ class DamageReport extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    /**
+     * The damage reports that belong to the repair shop.
+     */
+    public function repairShops()
+    {
+        return $this->belongsToMany(RepairShop::class)->withTimestamps();
+    }
+
+    /**
+     * Get the images for the damage report.
+     */
+    public function images()
+    {
+        return $this->hasMany(Image::class);
+    }
 }

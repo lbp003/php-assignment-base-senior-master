@@ -26,12 +26,4 @@ class Customer extends Model
     {
         return $this->hasMany(DamageReport::class);
     }
-
-    /**
-     * The repair shops that belong to the customer.
-     */
-    public function repairShops()
-    {
-        return $this->belongsToMany(RepairShop::class)->withTimestamps();
-    }
 }

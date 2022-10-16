@@ -20,4 +20,12 @@ class Image extends Model
         'disk',
         'path',
     ];
+
+    /**
+     * Get the damage report that owns the image.
+     */
+    public function damageReport()
+    {
+        return $this->belongsTo(DamageReport::class);
+    }
 }
