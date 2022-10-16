@@ -16,14 +16,14 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('state_by')->constrained('users');
+            $table->foreignId('state_by')->nullable()->constrained('users');
             $table->string('damage_report_number');
             $table->longText('description');
             $table->decimal('latitude', 10, 7);
             $table->decimal('longitude', 10, 7);
             $table->date('date');
             $table->string('state');
-            $table->longText('reason');
+            $table->longText('reason')->nullable();
             $table->timestamps();
         });
     }

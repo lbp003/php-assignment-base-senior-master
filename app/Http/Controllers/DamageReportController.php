@@ -5,9 +5,24 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDamageReportRequest;
 use App\Http\Requests\UpdateDamageReportRequest;
 use App\Models\DamageReport;
+use App\Services\DamageReportService;
+use Exception;
 
 class DamageReportController extends Controller
 {
+    /**
+     * The damage report service instance.
+     *
+     * @var \App\Services\DamageReportService
+     */
+    protected $damageReportService;
+
+    public function __construct(
+        DamageReportService $damageReportService,
+    ) {
+        $this->damageReportService = $damageReportService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -32,11 +47,20 @@ class DamageReportController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\StoreDamageReportRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreDamageReportRequest $request)
     {
-        //
+        try {
+            return $this->damageReportService->handleStoreDamageReportRequest($request);
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                'message' => $e->getMessage(),
+            ],
+                400
+            );
+        }
     }
 
     /**

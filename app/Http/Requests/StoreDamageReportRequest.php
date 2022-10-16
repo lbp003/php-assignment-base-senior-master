@@ -13,7 +13,7 @@ class StoreDamageReportRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,13 @@ class StoreDamageReportRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'customer_id' => 'required|exists:customers,id',
+            'created_by' => 'required|exists:users,id',
+            'description' => 'required',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'date' => 'required|date',
+            'images' => 'file|nullable|array',
         ];
     }
 }
