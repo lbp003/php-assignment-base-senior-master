@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\DamageReport;
+use App\Models\Image;
 
 class DamageReportRepository
 {
@@ -24,5 +25,12 @@ class DamageReportRepository
     public function getDamageReportById(int $id): DamageReport
     {
         return DamageReport::find($id);
+    }
+
+    public function handleImageSave(Image $image): Image
+    {
+        $image->save();
+
+        return $image;
     }
 }

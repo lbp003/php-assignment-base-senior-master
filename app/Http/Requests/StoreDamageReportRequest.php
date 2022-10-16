@@ -30,7 +30,7 @@ class StoreDamageReportRequest extends FormRequest
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'date' => 'required|date',
-            'images' => 'file|nullable|array',
+            'images' => 'nullable|array',
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\StoreDamageReportRequest;
 use App\Http\Requests\UpdateStateDamageReportRequest;
 use App\Models\DamageReport;
+use App\Models\Image;
 use App\Models\RepairShop;
 use App\Notifications\NotifyCustomerOnRepairShopsAssigned;
 use App\Repositories\DamageReportRepository;
@@ -64,7 +65,16 @@ class DamageReportService
         $damageReport->state = DamageReport::STATE_NEW;
         $damageReport->damage_report_number = 'DRNO-' . Carbon::now()->timestamp;
 
-        return $this->damageReportRepository->handleSave($damageReport);
+        $damageReport = $this->damageReportRepository->handleSave($damageReport);
+
+        if ($request->hasFile('images')) {
+            $images = $request->file('images');
+            $damageReportId = $damageReport->id;
+
+            $this->handleImages($images, $damageReportId);
+        }
+
+        return $damageReport;
     }
 
     /**
@@ -173,5 +183,27 @@ class DamageReportService
         }
 
         return $repairShopsInArea;
+    }
+
+    /**
+     * Handle uploaded images.
+     *
+     * @param array $images
+     * @param int $damageReportId
+     */
+    protected function handleImages(array $images, int $damageReportId): void
+    {
+        foreach ($images as $file) {
+            $realName = $file->getClientOriginalName();
+            $path = $file->store('damage_report_images');
+
+            $image = new Image();
+
+            $image->damage_report_id = $damageReportId;
+            $image->path = $path;
+            $image->filename = $realName;
+
+            $this->damageReportRepository->handleImageSave($image);
+        }
     }
 }

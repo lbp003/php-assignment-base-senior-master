@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('damage_report_id')->constrained('damage_reports');
             $table->string('filename');
-            $table->string('disk');
+            $table->string('disk')->nullable();
             $table->string('path');
             $table->timestamps();
         });
