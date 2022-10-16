@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDamageReportRequest;
 use App\Http\Requests\UpdateDamageReportRequest;
+use App\Http\Requests\UpdateStateDamageReportRequest;
 use App\Models\DamageReport;
 use App\Services\DamageReportService;
 use Exception;
+use Illuminate\Http\Request;
 
 class DamageReportController extends Controller
 {
@@ -26,21 +28,31 @@ class DamageReportController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        try {
+            $state = $request->state;
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+            $damageReports = $this->damageReportService->handleGetAllDamageReports($state);
+
+            return response()->json(
+                [
+                  'success' => true,
+                  'data' => $damageReports,
+                ],
+                200
+            );
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                'message' => $e->getMessage(),
+            ],
+                400
+            );
+        }
     }
 
     /**
@@ -52,7 +64,15 @@ class DamageReportController extends Controller
     public function store(StoreDamageReportRequest $request)
     {
         try {
-            return $this->damageReportService->handleStoreDamageReportRequest($request);
+            $damageReport = $this->damageReportService->handleStoreDamageReportRequest($request);
+
+            return response()->json(
+                [
+                  'success' => true,
+                  'data' => $damageReport,
+                ],
+                201
+            );
         } catch (Exception $e) {
             return response()->json(
                 [
@@ -67,22 +87,28 @@ class DamageReportController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\DamageReport  $damageReport
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(DamageReport $damageReport)
     {
-        //
-    }
+        try {
+            $damageReport = $this->damageReportService->handleGetDamageReport($damageReport);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\DamageReport  $damageReport
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(DamageReport $damageReport)
-    {
-        //
+            return response()->json(
+                [
+                  'success' => true,
+                  'data' => $damageReport,
+                ],
+                200
+            );
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                'message' => $e->getMessage(),
+            ],
+                400
+            );
+        }
     }
 
     /**
@@ -106,5 +132,36 @@ class DamageReportController extends Controller
     public function destroy(DamageReport $damageReport)
     {
         //
+    }
+
+    /**
+     * Update the specified resource's state in storage.
+     *
+     * @param  \App\Http\Requests\UpdateStateDamageReportRequest  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function approval(
+        UpdateStateDamageReportRequest $request,
+        int $id
+    ) {
+        try {
+            $damageReport = $this->damageReportService->handleDamageReportApproval($request, $id);
+
+            return response()->json(
+                [
+                  'success' => true,
+                  'data' => $damageReport,
+                ],
+                200
+            );
+        } catch (Exception $e) {
+            return response()->json(
+                [
+                    'message' => $e->getMessage(),
+                ],
+                400
+            );
+        }
     }
 }

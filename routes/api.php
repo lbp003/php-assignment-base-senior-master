@@ -22,5 +22,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 /*
  * Register damage report routes
  */
-Route::put('damage-reports/{id}/approval', [DamageReportController::class]);
+Route::put(
+    'damage-reports/{id}/approval',
+    [
+        DamageReportController::class, 'approval',
+    ]
+)->name('approval');
+
 Route::resource('damage-reports', DamageReportController::class);

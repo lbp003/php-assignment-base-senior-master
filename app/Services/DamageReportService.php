@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Http\Requests\StoreDamageReportRequest;
+use App\Http\Requests\UpdateStateDamageReportRequest;
 use App\Models\DamageReport;
 use App\Repositories\DamageReportRepository;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class DamageReportService
 {
@@ -26,7 +28,7 @@ class DamageReportService
      * Handle damage report POST request.
      *
      * @param  \App\Http\Requests\StoreDamageReportRequest  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \App\Models\DamageReport  $damageReport
      */
     public function handleStoreDamageReportRequest(StoreDamageReportRequest $request)
     {
@@ -41,14 +43,66 @@ class DamageReportService
         $damageReport->state = DamageReport::STATE_NEW;
         $damageReport->damage_report_number = 'DRNO-' . Carbon::now()->timestamp;
 
-        $lastInsertId = $this->damageReportRepository->handleSave($damageReport);
+        return $this->damageReportRepository->handleSave($damageReport);
+    }
 
-        return response()->json(
-            [
-              'success' => true,
-              'last_insert_id' => $lastInsertId,
-            ],
-            201
-        );
+    /**
+     * Handle damage report GET all request.
+     *
+     * @param string $state
+     * @return array $array
+     */
+    public function handleGetAllDamageReports(string $state = null)
+    {
+        return $this->damageReportRepository->getAllDamageReports($state);
+    }
+
+    /**
+     * Handle damage report GET one request.
+     *
+     * @param \App\Models\DamageReport $damageReport
+     * @return \App\Models\DamageReport  $damageReport
+     */
+    public function handleGetDamageReport(DamageReport $damageReport)
+    {
+        $id = $damageReport->id;
+
+        return $this->damageReportRepository->getDamageReportById($id);
+    }
+
+    /**
+     * Handle damage report approval request.
+     *
+     * @param \App\Http\Requests\UpdateStateDamageReportRequest  $request
+     * @return \App\Models\DamageReport
+     */
+    public function handleDamageReportApproval(
+        UpdateStateDamageReportRequest $request,
+        int $id
+    ) {
+        $isApproved = $request->is_approved;
+        $stateBy = $request->state_by;
+
+        $damageReport = $this->damageReportRepository->getDamageReportById($id);
+
+        $currentState = $damageReport->state;
+
+        if (
+            $currentState === DamageReport::STATE_APPROVED ||
+            $currentState === DamageReport::STATE_REJECTED
+        ) {
+            throw ValidationException::withMessages(['The resource has already updated.']);
+        }
+
+        if ($isApproved === true) {
+            $damageReport->state = DamageReport::STATE_APPROVED;
+            $damageReport->state_by = $stateBy;
+        } else {
+            $damageReport->state = DamageReport::STATE_REJECTED;
+            $damageReport->state_by = $stateBy;
+            $damageReport->reason = $request->reason;
+        }
+
+        return $this->damageReportRepository->handleSave($damageReport);
     }
 }
