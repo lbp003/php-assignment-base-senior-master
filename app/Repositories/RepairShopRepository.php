@@ -8,7 +8,7 @@ class RepairShopRepository
 {
     public function getAllRepairShopsLatLongs(): array
     {
-        return RepairShop::get(['id', 'latitude', 'longitude'])
+        return RepairShop::get(['id', 'name', 'latitude', 'longitude'])
                 ->toArray();
     }
 }

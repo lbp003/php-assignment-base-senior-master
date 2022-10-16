@@ -12,9 +12,9 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('damage_report_repair_shops', function (Blueprint $table) {
+        Schema::create('damage_report_repair_shop', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers');
+            $table->foreignId('damage_report_id')->constrained('damage_reports');
             $table->foreignId('repair_shop_id')->constrained('repair_shops');
             $table->timestamps();
         });
@@ -27,6 +27,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('damage_report_repair_shops');
+        Schema::dropIfExists('damage_report_repair_shop');
     }
 };

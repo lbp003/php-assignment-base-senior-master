@@ -6,6 +6,7 @@ use App\Http\Requests\StoreDamageReportRequest;
 use App\Http\Requests\UpdateStateDamageReportRequest;
 use App\Models\DamageReport;
 use App\Models\RepairShop;
+use App\Notifications\NotifyCustomerOnRepairShopsAssigned;
 use App\Repositories\DamageReportRepository;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -27,12 +28,21 @@ class DamageReportService
      */
     protected $repairShopService;
 
+    /**
+     * The customer service instance.
+     *
+     * @var \App\Services\CustomerService
+     */
+    protected $customerService;
+
     public function __construct(
         DamageReportRepository $damageReportRepository,
         RepairShopService $repairShopService,
+        CustomerService $customerService,
     ) {
         $this->damageReportRepository = $damageReportRepository;
         $this->repairShopService = $repairShopService;
+        $this->customerService = $customerService;
     }
 
     /**
@@ -120,7 +130,13 @@ class DamageReportService
             $repairShopsInArea = $this->checkLocationInGivenArea($location);
 
             if (!empty($repairShopsInArea)) {
-                // @todo Send email to customer
+                foreach ($repairShopsInArea as $repairShop) {
+                    $damageReport->repairShops()->attach($repairShop['id']);
+                }
+
+                $customer = $this->customerService->handleGetCustomer($damageReport->customer_id);
+                // @todo Queue notification sending for the customer
+                new NotifyCustomerOnRepairShopsAssigned($repairShopsInArea, $customer);
             }
         } else {
             $damageReport->state = DamageReport::STATE_REJECTED;
