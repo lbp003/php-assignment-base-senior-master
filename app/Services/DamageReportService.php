@@ -6,7 +6,6 @@ use App\Http\Requests\StoreDamageReportRequest;
 use App\Http\Requests\UpdateStateDamageReportRequest;
 use App\Models\DamageReport;
 use App\Models\Image;
-use App\Models\RepairShop;
 use App\Notifications\NotifyCustomerOnRepairShopsAssigned;
 use App\Repositories\DamageReportRepository;
 use Carbon\Carbon;
@@ -170,7 +169,7 @@ class DamageReportService
         foreach ($repairShops as $repairShop) {
             $isInArea = GeoFacade::setMainPoint([$location[0], $location[1]])
             // diameter in kilo meter
-             ->setDiameter(RepairShop::REPAIR_SHOP_DISTANCE)
+             ->setDiameter(config('app.distance_radius'))
             // point to check, do not insert more than one point here.
              ->setPoint([$repairShop['latitude'], $repairShop['longitude']])
              ->isInArea();
