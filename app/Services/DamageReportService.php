@@ -145,8 +145,7 @@ class DamageReportService
                 }
 
                 $customer = $this->customerService->handleGetCustomer($damageReport->customer_id);
-                // @todo Queue notification sending for the customer
-                new NotifyCustomerOnRepairShopsAssigned($repairShopsInArea, $customer);
+                $customer->notify(new NotifyCustomerOnRepairShopsAssigned($repairShopsInArea, $customer));
             }
         } else {
             $damageReport->state = DamageReport::STATE_REJECTED;

@@ -9,6 +9,7 @@ use App\Models\DamageReport;
 use App\Services\DamageReportService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DamageReportController extends Controller
 {
@@ -63,8 +64,12 @@ class DamageReportController extends Controller
      */
     public function store(StoreDamageReportRequest $request)
     {
+        DB::beginTransaction();
+
         try {
             $damageReport = $this->damageReportService->handleStoreDamageReportRequest($request);
+
+            DB::commit();
 
             return response()->json(
                 [
@@ -74,6 +79,8 @@ class DamageReportController extends Controller
                 201
             );
         } catch (Exception $e) {
+            DB::rollBack();
+
             return response()->json(
                 [
                 'message' => $e->getMessage(),
@@ -145,8 +152,12 @@ class DamageReportController extends Controller
         UpdateStateDamageReportRequest $request,
         int $id
     ) {
+        DB::beginTransaction();
+
         try {
             $damageReport = $this->damageReportService->handleDamageReportApproval($request, $id);
+
+            DB::commit();
 
             return response()->json(
                 [
@@ -156,6 +167,8 @@ class DamageReportController extends Controller
                 200
             );
         } catch (Exception $e) {
+            DB::rollBack();
+
             return response()->json(
                 [
                     'message' => $e->getMessage(),
