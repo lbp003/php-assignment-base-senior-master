@@ -125,6 +125,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'distance_radius' => env('DISTANCE_RADIUS'),
+
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver

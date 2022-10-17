@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -41,4 +40,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the created damage reports for the user.
+     */
+    public function createdDamageReports()
+    {
+        return $this->hasMany(DamageReport::class, 'created_by');
+    }
+
+    /**
+     * Get the approved damage reports for the user.
+     */
+    public function approvedDamageReports()
+    {
+        return $this->hasMany(DamageReport::class, 'state_by');
+    }
 }
